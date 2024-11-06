@@ -3,7 +3,7 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
 # 定义机器人令牌
-TOKEN = '7720654732:AAGc-CbQhXx73auptB1JbZTjTY7rjFnWfPI'
+TOKEN = 'Telegram_bot_key'
 DEFAULT_DELETE_TIME = 60  # 默认删除时间，单位为秒
 
 # 检查是否是管理员
