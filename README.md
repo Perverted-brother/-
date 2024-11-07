@@ -1,4 +1,4 @@
-Telegram_bot_变态媒体定时删除机器人
+#Telegram_bot_变态媒体定时删除机器人
 #
 “完全开源”
 #
