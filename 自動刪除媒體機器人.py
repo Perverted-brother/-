@@ -1,6 +1,7 @@
 import asyncio
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+import telegram.error
 
 # 定义机器人令牌
 TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN'
@@ -19,9 +20,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if update.message:
             try:
                 reply = await update.message.reply_text("此命令仅管理员可用。")
-                await asyncio.sleep(5)
-                await update.message.delete()
-                await reply.delete()
+                await asyncio.gather(
+                    asyncio.sleep(5),
+                    update.message.delete(),
+                    reply.delete()
+                )
             except telegram.error.BadRequest as e:
                 print(f"无法回复或删除消息: {e}")
         return
@@ -36,9 +39,11 @@ async def set_delete_time(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if update.message:
             try:
                 reply = await update.message.reply_text("此命令仅管理员可用。")
-                await asyncio.sleep(5)
-                await update.message.delete()
-                await reply.delete()
+                await asyncio.gather(
+                    asyncio.sleep(5),
+                    update.message.delete(),
+                    reply.delete()
+                )
             except telegram.error.BadRequest as e:
                 print(f"无法回复或删除消息: {e}")
         return
