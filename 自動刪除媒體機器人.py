@@ -3,7 +3,7 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
 # 定义机器人令牌
-TOKEN = 'Telegram_bot_key'
+TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN'
 DEFAULT_DELETE_TIME = 60  # 默认删除时间，单位为秒
 
 # 检查是否是管理员
@@ -16,10 +16,14 @@ async def is_admin(update: Update) -> bool:
 # 处理启动命令
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await is_admin(update):
-        reply = await update.message.reply_text("此命令仅管理员可用。")
-        await asyncio.sleep(5)  # 5秒后删除
-        await update.message.delete()
-        await reply.delete()
+        if update.message:
+            try:
+                reply = await update.message.reply_text("此命令仅管理员可用。")
+                await asyncio.sleep(5)
+                await update.message.delete()
+                await reply.delete()
+            except telegram.error.BadRequest as e:
+                print(f"无法回复或删除消息: {e}")
         return
     
     await update.message.reply_text(
@@ -29,22 +33,28 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # 设置删除时间的命令
 async def set_delete_time(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await is_admin(update):
-        reply = await update.message.reply_text("此命令仅管理员可用。")
-        await asyncio.sleep(5)  # 5秒后删除
-        await update.message.delete()
-        await reply.delete()
+        if update.message:
+            try:
+                reply = await update.message.reply_text("此命令仅管理员可用。")
+                await asyncio.sleep(5)
+                await update.message.delete()
+                await reply.delete()
+            except telegram.error.BadRequest as e:
+                print(f"无法回复或删除消息: {e}")
         return
     
     try:
         delete_time = int(context.args[0])
         context.user_data['delete_time'] = delete_time
         reply = await update.message.reply_text(f"本次删除时间已设置为 {delete_time} 秒。")
+        await asyncio.sleep(5)
+        await reply.delete()
     except (IndexError, ValueError):
         reply = await update.message.reply_text("请使用正确的格式: /set <秒数>")
-    
-    # 自动删除管理员回复的命令（若需要的话）
-    await asyncio.sleep(5)
-    await reply.delete()
+        await asyncio.sleep(5)
+        await reply.delete()
+    except telegram.error.BadRequest as e:
+        print(f"删除消息失败: {e}")
 
 # 处理媒体消息
 async def handle_media(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -59,7 +69,7 @@ async def handle_media(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await asyncio.sleep(delete_time)
     try:
         await context.bot.delete_message(chat_id=chat_id, message_id=message_id)
-    except Exception as e:
+    except telegram.error.BadRequest as e:
         print(f"删除消息失败: {e}")
 
 # 设置主要函数来启动机器人
